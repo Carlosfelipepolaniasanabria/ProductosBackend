@@ -5,44 +5,38 @@ export class productsEntity {
         { id: "3", producto: "Telefono", precio: "30000" }
     ];
 
-    Encontraruno(id) {
-        return this.products.find((product) => String(product.id) === String(id));
+    findOne(id) {
+        return this.products.find((product) => product.id === id);
     }
 
-    Findall() {
+    findAll() {
         return this.products;
     }
 
     create(product) {
-        const newID = this.Findall().length + 1;
-        product.id = String(newID);
+        if (!product.id) {
+            const newId = this.findAll().length + 1;
+            product.id = newId;
+        }
         this.products.push(product);
-        return this.Encontraruno(product.id);
+        return this.findOne(product.id);
     }
 
     update(id, product) {
-        const productDb = this.Encontraruno(id);
-        if (!productDb) return null;
+        const productDb = this.findOne(id);
 
-        this.products = this.products.filter((u) => String(u.id) !== String(id));
+        this.products = this.products.filter((u) => u.id !== id);
 
-        const updateProduct = {
+        const updatedProduct = {
             ...productDb,
             ...product,
-            id: String(id)
         };
-
-        this.products.push(updateProduct);
-        return updateProduct;
+        return this.create(updatedProduct);
     }
 
     delete(id) {
-        const productToDelete = this.Encontraruno(id);
-        if (productToDelete) {
-            this.products = this.products.filter((product) => product.id !== id);
-            return productToDelete; 
-        }
-        return null;  
+        this.products = this.products.filter((u) => u.id !== id);
+        return "User Deleted";
     }
 }
 
