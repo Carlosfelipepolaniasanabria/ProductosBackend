@@ -4,9 +4,35 @@ import { validate } from "../middleware/validate.js";
 import { body, param} from "express-validator";
 import { checkProductInDB } from "../middleware/checkproduct.js";
 import { authorize } from "../middleware/auth.js";
+import { cacheValkey } from "../config/cacheValkey.js";
+import dotenv from "dotenv";
+
+dotenv.configDotenv();
+
  const router = Router();
 
- router.get("/:id",[
+
+ router.get("/", async (req, res) => {
+    const productsCache = await cacheValkey.get("products");
+
+    if (productsCache ) {
+        return res.json({
+            data: JSON.parse(productsCache ),
+        });
+    }
+
+    const products = await Products.findAll();
+
+    await cacheValkey.set("products", JSON.stringify(products), "EX", 60);
+
+    return res.json({
+        data: products,
+    });
+});
+
+
+ router.get("/:id",
+    [
     param("id").isInt().exists(),
     validate,
 
@@ -18,11 +44,21 @@ import { authorize } from "../middleware/auth.js";
     const { id } = req.params;
     console.log(req.Products);
 
+
+    const productCache = await cacheValkey.get(`product_${id}`);
+    if (productCache) {
+
+            return res.json({
+                data: JSON.parse(productCache),
+            });
+        }
     const product = await Products.findOne({
         where: {
             id: +id,
         },
     });
+
+        await cacheValkey.set(`prodcut_${id}`, JSON.stringify(product), "EX", 60);
 
     return res.json({
         data: product,
@@ -82,18 +118,26 @@ import { authorize } from "../middleware/auth.js";
         [
             param("id").isInt().exists(),
             validate,
-    
             checkProductInDB,
         ],
         async (req, res) => {
+
             const { id } = req.params;
     
-            return res.json({
+            await res.json({
                 data: await Products.destroy({
                     where: {
                         id: +id,
                     },
                 }),
+            });
+
+            await cacheValkey.del(`product_${id}`);
+            await cacheValkey.del("products");
+
+
+            return res.json({
+                message: "User deleted successfully",
             });
         }
     );

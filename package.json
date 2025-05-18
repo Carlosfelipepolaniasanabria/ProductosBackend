@@ -17,9 +17,11 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
+    "iovalkey": "^0.3.1",
     "jsonwebtoken": "^9.0.2",
     "mariadb": "^3.4.2",
     "morgan": "^1.10.0",
-    "sequelize": "^6.37.7"
+    "sequelize": "^6.37.7",
+    "valkey": "^0.0.3"
   }
 }
