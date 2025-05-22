@@ -9,8 +9,7 @@ import dotenv from "dotenv";
 
 dotenv.configDotenv();
 
- const router = Router();
-
+const router = Router();
 
  router.get("/", async (req, res) => {
     const productsCache = await cacheValkey.get("products");
@@ -67,23 +66,29 @@ dotenv.configDotenv();
 )
 
 
+router.post('/', async (req, res) => {
+  try {
+    const { nombre, precio } = req.body;
 
-    router.post(
-    "/",
-    [
-        body("id").isEmpty(),
-        body("producto").isString().exists(),
-        body("precio").isNumeric().exists(),
-        validate,
-    ],
-    async (req,res) => {
-        const productCreate = req.body;
-        const createProduct = await Products.create(productCreate)
-        return res.json({
-            data:createProduct,
-        })
-    })
+    // Crear producto en la base de datos con Sequelize
+    const nuevoProducto = await Products.create({
+      nombre,
+      precio
+    });
 
+    // Emitir evento usando Socket.io
+    req.io.emit('nuevo_producto', nuevoProducto);
+
+    // Responder al cliente
+    res.status(201).json({
+      mensaje: 'Producto agregado correctamente',
+      producto: nuevoProducto
+    });
+  } catch (error) {
+    console.error('Error al agregar producto:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
 
 
     router.patch("/:id"

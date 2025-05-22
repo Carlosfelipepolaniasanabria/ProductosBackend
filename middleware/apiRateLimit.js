@@ -2,7 +2,7 @@ import { cacheValkey } from "../config/cacheValkey.js";
 
 export const apiRateLimit = async (req, res, next) => {
     let ip;
-    const limit = 2;
+    const limit = 1000;
     const seconds = 30;
 
     if (req.headers["x-forwarded-for"]) {
