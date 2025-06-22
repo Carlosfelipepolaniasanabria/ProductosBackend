@@ -1,0 +1,7 @@
+.env_example
+.env
+node_modules/
+.git/
+.gitignore
+yarn.lock
+package-lock.json
