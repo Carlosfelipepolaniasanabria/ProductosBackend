@@ -12,7 +12,7 @@ pipeline {
             steps {
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: '*/backend-2025']],
+                    branches: [[name: '*/master']],
                     userRemoteConfigs: [[url: env.GIT_REPO_URL]]
                 ])
             }
