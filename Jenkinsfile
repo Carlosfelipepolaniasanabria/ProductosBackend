@@ -1,10 +1,5 @@
-stage('Docker Login') {
-    steps {
-        sh """
-            echo ${env.DOCKER_HUB_CREDENTIALS_PSW} | docker login -u ${env.DOCKER_HUB_CREDENTIALS_USR} --password-stdin
-        """
-    }
-}
+
+
 pipeline {
     agent any
 
